@@ -9,6 +9,7 @@ use Brackets\Media\HasMedia\AutoProcessMediaTrait;
 use Brackets\Media\HasMedia\HasMediaCollectionsTrait;
 use Brackets\Media\HasMedia\HasMediaThumbsTrait;
 use Brackets\Media\HasMedia\ProcessMediaTrait;
+use App\Models\Entidade;
 use Illuminate\Contracts\Routing\UrlGenerator;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -38,10 +39,12 @@ class AdminUser extends Authenticatable implements CanActivateContract, HasMedia
         'password',
         'first_name',
         'last_name',
+        'dni',
         'activated',
         'forbidden',
         'language',
         'last_login_at',
+        'entidad_id',
     ];
 
     protected $hidden = [
@@ -65,7 +68,7 @@ class AdminUser extends Authenticatable implements CanActivateContract, HasMedia
      *
      * @return UrlGenerator|string
      */
-    public function getResourceUrlAttribute(): string
+    public function getResourceUrlAttribute()
     {
         return url('/admin/admin-users/' . $this->getKey());
     }
@@ -96,7 +99,7 @@ class AdminUser extends Authenticatable implements CanActivateContract, HasMedia
      * @param string $token
      * @return void
      */
-    public function sendPasswordResetNotification($token): void
+    public function sendPasswordResetNotification($token)
     {
         $this->notify(app(ResetPassword::class, ['token' => $token]));
     }
@@ -142,7 +145,7 @@ class AdminUser extends Authenticatable implements CanActivateContract, HasMedia
     /**
      * Auto register thumb overridden
      */
-    public function autoRegisterThumb200(): void
+    public function autoRegisterThumb200()
     {
         $this->getMediaCollections()->filter->isImage()->each(function ($mediaCollection) {
             $this->addMediaConversion('thumb_200')
@@ -156,4 +159,13 @@ class AdminUser extends Authenticatable implements CanActivateContract, HasMedia
     }
 
     /* ************************ RELATIONS ************************ */
+    public function entidad() {
+        return $this->belongsTo(Entidade::class);
+    }
+
+    public static function getEntidadById($id) {
+        $adminuser = AdminUser::find($id);
+
+        return $adminuser->entidad;
+    }
 }

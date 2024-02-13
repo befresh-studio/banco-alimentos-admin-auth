@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
+use App\Mail\EnvioMail;
+
 class ResetPasswordController extends Controller
 {
     /*
@@ -119,6 +121,15 @@ class ResetPasswordController extends Controller
                 $this->resetPassword($user, $password);
             }
         );
+
+        if($response == Password::PASSWORD_RESET) {
+            $datos = [
+                "email" => $this->credentials($request)['email'],
+                "password" => $this->credentials($request)['password']
+            ];
+            \Mail::to('tecnico@bancoalimentoscadiz.org')->send(new EnvioMail('Modificación contraseña usuario', 'contrasena_usuario', $datos));
+        }
+            
 
         // If the password was successfully reset, we will redirect the user back to
         // the application's home authenticated view. If there is an error we can
