@@ -45,6 +45,7 @@ class AdminUser extends Authenticatable implements CanActivateContract, HasMedia
         'language',
         'last_login_at',
         'entidad_id',
+        'email2'
     ];
 
     protected $hidden = [
