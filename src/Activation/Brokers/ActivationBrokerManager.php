@@ -81,7 +81,8 @@ class ActivationBrokerManager implements FactoryContract
      */
     protected function createTokenRepository(array $config): DatabaseTokenRepository
     {
-        $key = $this->app['config']['app.key'];
+        // Sin APP_KEY (instalación nueva) no debe romper el arranque de artisan
+        $key = (string) $this->app['config']['app.key'];
 
         if (Str::startsWith($key, 'base64:')) {
             $key = base64_decode(substr($key, 7));
